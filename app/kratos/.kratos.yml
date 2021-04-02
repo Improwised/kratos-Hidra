@@ -1,0 +1,145 @@
+serve:
+  public:
+    base_url: http://127.0.0.1:4433/
+  admin:
+    base_url: http://kratos:4434/
+
+selfservice:
+  default_browser_return_url: http://127.0.0.1:4455/
+  whitelisted_return_urls:
+    - http://127.0.0.1:4455/
+    - http://127.0.0.1:4455/auth/hydra/login
+
+  methods:
+    password:
+      enabled: true
+    oidc:
+      enabled: true
+      config:
+        providers:
+          - id: github # this is `<provider-id>` in the Authorization callback URL. DO NOT CHANGE IT ONCE SET!
+            provider: github
+            client_id: 9c95aa6520f95a296dc0
+            client_secret: b5d461189343faaa58f29812328228135d2a5068
+            mapper_url: file:///etc/config/kratos/oidc.github.jsonnet
+            scope:
+              - user:email
+          - id: microsoft # this is `<provider-id>` in the Authorization callback URL. DO NOT CHANGE IT ONCE SET!
+            provider: microsoft
+            client_id: a6316b49-11ba-459e-827b-0044283978a6
+            client_secret: i-jQY~fD6JD~aSg6jQPM_6Wbl2Prl7zV.w
+            tenant: "common"
+            mapper_url: file:///etc/config/kratos/oidc.microsoft.jsonnet
+            scope:
+              - profile
+              - email
+          - id: discord # this is `<provider-id>` in the Authorization callback URL. DO NOT CHANGE IT ONCE SET!
+            provider: discord
+            client_id: "823500182414557184"
+            client_secret: "HbU6sVnSZKXsuEypmFfPL1-IF6Ujm3CA"
+            mapper_url: file:///etc/config/kratos/oidc.discord.jsonnet
+            scope:
+              - identify
+              - email
+          - id: twitch # this is `<provider-id>` in the Authorization callback URL. DO NOT CHANGE IT ONCE SET!
+            provider: generic
+            client_id: "gnn9jezm4vngcybb8g5civ1dxe0tfn"
+            client_secret: "a8ntf0ytd45vpdzya014kah5ba0obo"
+            issuer_url: https://id.twitch.tv/oauth2
+            mapper_url: file:///etc/config/kratos/oidc.twitch.jsonnet
+            scope:
+              - openid
+              - user:read:email # required for email and email_verified claims in the near future
+          - id: hydra # this is `<provider-id>` in the Authorization callback URL. DO NOT CHANGE IT ONCE SET!
+            provider: generic
+            client_id:  kratos-client
+            client_secret: kratos-secret
+            issuer_url: http://788e22c945cf.ngrok.io/
+            mapper_url: file:///etc/config/kratos/oidc.hydra.jsonnet
+            scope:
+              - openid
+              - offline
+          - id: google # this is `<provider-id>` in the Authorization callback URL. DO NOT CHANGE IT ONCE SET!
+            provider: google
+            client_id: "165336810566-mafh21ugnctb1upd8i33ect1q5glmd75.apps.googleusercontent.com"
+            client_secret: "cKFt1Z9wdu9kQu4RATB5AbTa"
+            mapper_url: file:///etc/config/kratos/oidc.google.jsonnet
+            scope:
+              - email
+              - profile
+              # other supported scopes can be found in Google OAuth 2.0 dev docs
+            requested_claims:
+              id_token:
+                email:
+                  essential: true
+                email_verified:
+                  essential: true
+                given_name:
+                  essential: true
+                iss:
+                  essential: true
+                family_name: null
+                hd: null # If you want the G Suite domain
+              
+  flows:
+    error:
+      ui_url: http://127.0.0.1:4455/error
+
+    settings:
+      ui_url: http://127.0.0.1:4455/settings
+      privileged_session_max_age: 15m
+
+    recovery:
+      enabled: true
+      ui_url: http://127.0.0.1:4455/recovery
+
+    verification:
+      enabled: true
+      ui_url: http://127.0.0.1:4455/verify
+      after:
+        default_browser_return_url: http://127.0.0.1:4455/
+
+    logout:
+      after:
+        default_browser_return_url: http://127.0.0.1:4455/auth/login
+
+    login:
+      ui_url: http://127.0.0.1:4455/auth/login
+
+    registration:
+      lifespan: 10m
+      ui_url: http://127.0.0.1:4455/auth/registration
+      after:
+        password:
+          hooks:
+            -
+              hook: session
+        oidc:
+          hooks:
+            - hook: session
+log:
+  level: debug
+  format: text
+  leak_sensitive_values: true
+
+secrets:
+  cookie:
+    - PLEASE-CHANGE-ME-I-AM-VERY-INSECURE
+
+hashers:
+  argon2:
+    parallelism: 1
+    memory: 131072
+    iterations: 2
+    salt_length: 16
+    key_length: 16
+
+identity:
+  default_schema_url: file:///etc/config/kratos/identity.schema.json
+  schemas:
+  - id: admin
+    url: https://gist.githubusercontent.com/vimal7016/3d2db2b43d9bdf02b6b4d0b534b3e689/raw
+
+courier:
+  smtp:
+    connection_uri: smtps://test:test@mailslurper:1025/?skip_ssl_verify=true
