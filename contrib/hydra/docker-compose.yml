@@ -39,11 +39,11 @@ services:
     restart: on-failure # TODO figure out why we need this (incorporate health check into hydra migrate command?)
     environment:
       - LOG_LEAK_SENSITIVE_VALUES=true
-      - URLS_SELF_ISSUER=http://788e22c945cf.ngrok.io/
-      - URLS_SELF_PUBLIC=http://788e22c945cf.ngrok.io/
-      - URLS_CONSENT=http://127.0.0.1:4455/auth/hydra/consent
-      - URLS_LOGIN=http://127.0.0.1:4455/auth/hydra/login
-      - URLS_LOGOUT=http://127.0.0.1:4455/logout
+      - URLS_SELF_ISSUER=http://d0ab99752edf.ngrok.io/
+      - URLS_SELF_PUBLIC=http://d0ab99752edf.ngrok.io/
+      - URLS_CONSENT=http://127.0.0.1:3000/auth/hydra/consent
+      - URLS_LOGIN=http://127.0.0.1:3000/auth/hydra/login
+      - URLS_LOGOUT=http://127.0.0.1:3000/logout
       - SECRETS_SYSTEM=youReallyNeedToChangeThis
       - OIDC_SUBJECT_IDENTIFIERS_SUPPORTED_TYPES=public,pairwise
       - OIDC_SUBJECT_IDENTIFIERS_PAIRWISE_SALT=youReallyNeedToChangeThis
@@ -51,17 +51,19 @@ services:
 
 
   kratos-selfservice-ui-node:
-    image: oryd/kratos-selfservice-ui-node:v0.5.0-alpha.1
-    ports:
-      - "4455:4455"
+    build:
+      context: ../..
+      dockerfile: Dockerfile
     environment:
-      - PORT=4455
-      - SECURITY_MODE=
-      - KRATOS_BROWSER_URL=http://127.0.0.1:4433/
       - HYDRA_ADMIN_URL=http://hydra:4445
       - KRATOS_PUBLIC_URL=http://kratos:4433/
       - KRATOS_ADMIN_URL=http://kratos:4434/
       - SECURITY_MODE=standalone
+      - KRATOS_BROWSER_URL=http://127.0.0.1:3000/.ory/kratos/public
+    ports:
+      - "3000:3000"
+    volumes:
+      - /tmp/ui-node/logs:/root/.npm/_logs
 
   kratos-migrate:
     image: oryd/kratos:v0.5.5-alpha.1.pre.1

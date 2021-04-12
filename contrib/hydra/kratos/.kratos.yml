@@ -1,14 +1,14 @@
 serve:
   public:
-    base_url: http://127.0.0.1:4433/
+    base_url: http://127.0.0.1:3000/.ory/kratos/public/
   admin:
     base_url: http://kratos:4434/
 
 selfservice:
-  default_browser_return_url: http://127.0.0.1:4455/
+  default_browser_return_url: http://127.0.0.1:3000/
   whitelisted_return_urls:
-    - http://127.0.0.1:4455/
-    - http://127.0.0.1:4455/auth/hydra/login
+    - http://127.0.0.1:3000/
+    - http://127.0.0.1:3000/auth/hydra/login
 
   methods:
     password:
@@ -54,7 +54,9 @@ selfservice:
             provider: generic
             client_id:  kratos-client
             client_secret: kratos-secret
-            issuer_url: http://788e22c945cf.ngrok.io/
+            issuer_url: http://d0ab99752edf.ngrok.io/
+            # auth_url: http://5208163870ba.ngrok.io/oauth2/auth
+            # token_url: http://5208163870ba.ngrok.io/oauth2/token
             mapper_url: file:///etc/config/kratos/oidc.hydra.jsonnet
             scope:
               - openid
@@ -83,32 +85,32 @@ selfservice:
               
   flows:
     error:
-      ui_url: http://127.0.0.1:4455/error
+      ui_url: http://127.0.0.1:3000/error
 
     settings:
-      ui_url: http://127.0.0.1:4455/settings
+      ui_url: http://127.0.0.1:3000/settings
       privileged_session_max_age: 15m
 
     recovery:
       enabled: true
-      ui_url: http://127.0.0.1:4455/recovery
+      ui_url: http://127.0.0.1:3000/recovery
 
     verification:
       enabled: true
-      ui_url: http://127.0.0.1:4455/verify
+      ui_url: http://127.0.0.1:3000/verify
       after:
-        default_browser_return_url: http://127.0.0.1:4455/
+        default_browser_return_url: http://127.0.0.1:3000/
 
     logout:
       after:
-        default_browser_return_url: http://127.0.0.1:4455/auth/login
+        default_browser_return_url: http://127.0.0.1:3000/auth/login
 
     login:
-      ui_url: http://127.0.0.1:4455/auth/login
+      ui_url: http://127.0.0.1:3000/auth/login
 
     registration:
       lifespan: 10m
-      ui_url: http://127.0.0.1:4455/auth/registration
+      ui_url: http://127.0.0.1:3000/auth/registration
       after:
         password:
           hooks:
